@@ -65,6 +65,8 @@ class _StaffSectionState extends State<StaffSection> {
     try {
       if (online) {
         carsTypes = await ApiService.instance.getNotSoldCars();
+        // group the cars by type
+        carsTypes.sort((a, b) => a.type!.compareTo(b.type!));
       } else {
         message(context, "No internet connection", "Error");
       }
