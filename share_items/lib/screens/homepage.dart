@@ -1,13 +1,14 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:share_items/screens/price_section.dart';
+import 'package:share_items/screens/staff_section.dart';
+import 'package:share_items/screens/supplier_section.dart';
 import 'package:share_items/widgets/notification.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../api/network.dart';
 import '../widgets/message.dart';
-import 'main_section.dart';
+import 'caroganizer_section.dart';
 
 class Homepage extends StatefulWidget {
   final String _title;
@@ -19,7 +20,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   final channel =
-      WebSocketChannel.connect(Uri.parse('ws://192.168.253.1:2325'));
+      WebSocketChannel.connect(Uri.parse('ws://192.168.197.1:2406'));
   var logger = Logger();
   bool online = true;
   Map _source = {ConnectivityResult.none: false};
@@ -78,10 +79,12 @@ class _HomepageState extends State<Homepage> {
           children: [
             ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MainSection()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CarOrganizerSection()));
                 },
-                child: const Text('Main section')),
+                child: const Text('Car Organizer section')),
             ElevatedButton(
                 onPressed: () {
                   if (!online) {
@@ -89,9 +92,21 @@ class _HomepageState extends State<Homepage> {
                     return;
                   }
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => PriceSection()));
+                      MaterialPageRoute(builder: (context) => StaffSection()));
                 },
-                child: const Text('Price section')),
+                child: const Text('Staff section')),
+            ElevatedButton(
+                onPressed: () {
+                  if (!online) {
+                    message(context, "No internet connection", "Info");
+                    return;
+                  }
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SupplierSection()));
+                },
+                child: const Text('Supplier section')),
             online ? ItemNotification() : const Text(''),
           ],
         ),

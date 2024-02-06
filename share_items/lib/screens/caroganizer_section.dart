@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:share_items/api/api.dart';
 import 'package:share_items/screens/add_item.dart';
+import 'package:share_items/screens/edit_item.dart';
 import 'package:share_items/screens/items_list_page.dart';
 import 'package:share_items/services/database_helper.dart';
 
@@ -10,15 +11,15 @@ import '../api/network.dart';
 import '../models/item.dart';
 import '../widgets/message.dart';
 
-class MainSection extends StatefulWidget {
+class CarOrganizerSection extends StatefulWidget {
   @override
-  _MainSectionState createState() => _MainSectionState();
+  _CarOrganizerSectionState createState() => _CarOrganizerSectionState();
 }
 
-class _MainSectionState extends State<MainSection> {
+class _CarOrganizerSectionState extends State<CarOrganizerSection> {
   var logger = Logger();
   bool online = true;
-  late List<String> categories = [];
+  late List<Item> cars = [];
   bool isLoading = false;
   Map _source = {ConnectivityResult.none: false};
   final NetworkConnectivity _connectivity = NetworkConnectivity.instance;
@@ -53,25 +54,25 @@ class _MainSectionState extends State<MainSection> {
       if (online != newStatus) {
         online = newStatus;
       }
-      getCategories();
+      getCars();
     });
   }
 
-  getCategories() async {
+  getCars() async {
     if (!mounted) return;
     setState(() {
       isLoading = true;
     });
     if (online) {
       try {
-        categories = await ApiService.instance.getCategories();
-        DatabaseHelper.updateCategories(categories);
+        cars = await ApiService.instance.getCars();
+        DatabaseHelper.updateCars(cars);
       } catch (e) {
-        logger.e(e);
+        logger.e("Error connecting to the server: $e");
         message(context, "Error connecting to the server", "Error");
       }
     } else {
-      categories = await DatabaseHelper.getCategories();
+      cars = await DatabaseHelper.getCars();
     }
 
     setState(() {
@@ -86,8 +87,8 @@ class _MainSectionState extends State<MainSection> {
     });
     if (online) {
       try {
-        final Item received = await ApiService.instance.addItem(item);
-        DatabaseHelper.addItem(received);
+        final Item received = await ApiService.instance.addCar(item);
+        DatabaseHelper.addCar(received);
       } catch (e) {
         logger.e(e);
         message(context, "Error connecting to the server", "Error");
@@ -104,7 +105,7 @@ class _MainSectionState extends State<MainSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main section'),
+        title: const Text('Car Organizer section'),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -114,13 +115,16 @@ class _MainSectionState extends State<MainSection> {
                 ListView.builder(
                   itemBuilder: ((context, index) {
                     return ListTile(
-                      title: Text(categories[index]),
+                      title: Text(
+                          'ID: ${cars[index].id}, Name: ${cars[index].name}'),
+                      subtitle: Text(
+                          'Type: ${cars[index].type}, Supplier: ${cars[index].supplier}'),
                       onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    ItemsListPage(categories[index])));
+                                    EditItemPage(item: cars[index])));
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
@@ -131,7 +135,7 @@ class _MainSectionState extends State<MainSection> {
                       ),
                     );
                   }),
-                  itemCount: categories.length,
+                  itemCount: cars.length,
                   physics: ScrollPhysics(),
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,

@@ -11,15 +11,15 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../api/network.dart';
 import '../services/database_helper.dart';
 
-class PriceSection extends StatefulWidget {
+class SupplierSection extends StatefulWidget {
   @override
-  _PriceSectionState createState() => _PriceSectionState();
+  _SupplierSectionState createState() => _SupplierSectionState();
 }
 
-class _PriceSectionState extends State<PriceSection> {
+class _SupplierSectionState extends State<SupplierSection> {
   var logger = Logger();
   bool online = true;
-  late List<Item> discountedItems = [];
+  late List<Item> pendingCars = [];
   bool isLoading = false;
   Map _source = {ConnectivityResult.none: false};
   final NetworkConnectivity _connectivity = NetworkConnectivity.instance;
@@ -54,69 +54,69 @@ class _PriceSectionState extends State<PriceSection> {
       if (online != newStatus) {
         online = newStatus;
       }
-      getDiscountedItems();
+      getPendingCars();
     });
   }
 
-  getDiscountedItems() async {
+  getPendingCars() async {
     if (!mounted) return;
     setState(() {
       isLoading = true;
     });
-    logger.log(Level.info, 'getDiscountedItems');
+    logger.log(Level.info, 'getPendingCars');
     try {
       if (online) {
-        discountedItems = await ApiService.instance.getDiscountedItems();
+        pendingCars = await ApiService.instance.getPendingCars();
       } else {
         message(context, "No internet connection", "Error");
       }
     } catch (e) {
       logger.log(Level.error, e.toString());
-      message(context, "Error loading items from server", "Error");
+      message(context, "No orders are available!", "Error");
     }
     setState(() {
       isLoading = false;
     });
   }
 
-  updatePrice(Item item) async {
-    if (!mounted) return;
-    setState(() {
-      isLoading = true;
-    });
-    logger.log(Level.info, 'updatePrice');
-    try {
-      if (online) {
-        ApiService.instance.updatePrice(item.id!, item.price);
-      } else {
-        message(context, "No internet connection", "Error");
-      }
-    } catch (e) {
-      logger.log(Level.error, e.toString());
-      message(context, "Error updating price", "Error");
-    }
-    setState(() {
-      isLoading = false;
-    });
-  }
+  // updatePrice(Item item) async {
+  //   if (!mounted) return;
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   logger.log(Level.info, 'updatePrice');
+  //   try {
+  //     if (online) {
+  //       ApiService.instance.updatePrice(item.id!, item.type);
+  //     } else {
+  //       message(context, "No internet connection", "Error");
+  //     }
+  //   } catch (e) {
+  //     logger.log(Level.error, e.toString());
+  //     message(context, "Error updating price", "Error");
+  //   }
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Price section'),
+          title: const Text('Supplier section'),
         ),
         body: isLoading
             ? const Center(child: CircularProgressIndicator())
             : Center(
                 child: ListView(children: [
                 ListView.builder(
-                  itemCount: discountedItems.length,
+                  itemCount: pendingCars.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(discountedItems[index].name),
+                      title: Text(pendingCars[index].name!),
                       subtitle: Text(
-                          '${discountedItems[index].description}, ${discountedItems[index].image}, ${discountedItems[index].category}, units: ${discountedItems[index].units}, price: ${discountedItems[index].price}'),
+                          '${pendingCars[index].supplier}, ${pendingCars[index].details}, ${pendingCars[index].status}, ${pendingCars[index].quantity}, ${pendingCars[index].type}'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                         side: const BorderSide(
@@ -128,12 +128,12 @@ class _PriceSectionState extends State<PriceSection> {
                         Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => EditItemPage(
-                                        item: discountedItems[index])))
+                                    builder: (context) =>
+                                        EditItemPage(item: pendingCars[index])))
                             .then((value) {
                           if (value != null) {
                             setState(() {
-                              updatePrice(value);
+                              //updatePrice(value);
                             });
                           }
                         });

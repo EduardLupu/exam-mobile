@@ -12,20 +12,20 @@ class AddItem extends StatefulWidget {
 
 class _AddItemState extends State<AddItem> {
   late TextEditingController nameController;
-  late TextEditingController descriptionController;
-  late TextEditingController imageController;
-  late TextEditingController categoryController;
-  late TextEditingController unitsController;
-  late TextEditingController priceController;
+  late TextEditingController supplierController;
+  late TextEditingController detailsController;
+  late TextEditingController statusController;
+  late TextEditingController quantityController;
+  late TextEditingController typeController;
 
   @override
   void initState() {
     nameController = TextEditingController();
-    descriptionController = TextEditingController();
-    imageController = TextEditingController();
-    categoryController = TextEditingController();
-    unitsController = TextEditingController();
-    priceController = TextEditingController();
+    supplierController = TextEditingController();
+    detailsController = TextEditingController();
+    statusController = TextEditingController();
+    quantityController = TextEditingController();
+    typeController = TextEditingController();
     super.initState();
   }
 
@@ -33,52 +33,52 @@ class _AddItemState extends State<AddItem> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Item'),
+        title: const Text('Add a car'),
       ),
       body: ListView(
         children: [
           TextBox(nameController, 'Name'),
-          TextBox(descriptionController, 'Description'),
-          TextBox(imageController, 'Image'),
-          TextBox(categoryController, 'Category'),
-          TextBox(unitsController, 'Units'),
-          TextBox(priceController, 'Price'),
+          TextBox(supplierController, 'Supplier'),
+          TextBox(detailsController, 'Details'),
+          TextBox(statusController, 'Status'),
+          TextBox(quantityController, 'Quantity'),
+          TextBox(typeController, 'Type'),
           ElevatedButton(
               onPressed: () {
                 String name = nameController.text;
-                String description = descriptionController.text;
-                String image = imageController.text;
-                String category = categoryController.text;
-                int? units = int.tryParse(unitsController.text);
-                double? price = double.tryParse(priceController.text);
+                String supplier = supplierController.text;
+                String details = detailsController.text;
+                String status = statusController.text;
+                int? quantity = int.tryParse(quantityController.text);
+                String? type = typeController.text;
                 if (name.isNotEmpty &&
-                    description.isNotEmpty &&
-                    image.isNotEmpty &&
-                    category.isNotEmpty &&
-                    units != null &&
-                    price != null) {
+                    supplier.isNotEmpty &&
+                    details.isNotEmpty &&
+                    status.isNotEmpty &&
+                    quantity != null &&
+                    type.isNotEmpty) {
                   Navigator.pop(
                       context,
                       Item(
                           name: name,
-                          description: description,
-                          image: image,
-                          category: category,
-                          units: units,
-                          price: price));
+                          supplier: supplier,
+                          details: details,
+                          status: status,
+                          quantity: quantity,
+                          type: type));
                 } else {
                   if (name.isEmpty) {
                     message(context, 'Name is required', "Error");
-                  } else if (description.isEmpty) {
-                    message(context, 'Description is required', "Error");
-                  } else if (image.isEmpty) {
-                    message(context, 'Image is required', "Error");
-                  } else if (category.isEmpty) {
-                    message(context, 'Category is required', "Error");
-                  } else if (units == null) {
-                    message(context, 'Units must be an integer', "Error");
-                  } else if (price == null) {
-                    message(context, 'Price must be a double', "Error");
+                  } else if (supplier.isEmpty) {
+                    message(context, 'supplier is required', "Error");
+                  } else if (details.isEmpty) {
+                    message(context, 'details is required', "Error");
+                  } else if (status.isEmpty) {
+                    message(context, 'status is required', "Error");
+                  } else if (quantity == null) {
+                    message(context, 'quantity must be an integer', "Error");
+                  } else if (type.isEmpty) {
+                    message(context, 'type is required', "Error");
                   }
                 }
               },

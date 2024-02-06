@@ -9,8 +9,8 @@ import '../api/network.dart';
 import '../services/database_helper.dart';
 
 class ItemsListPage extends StatefulWidget {
-  final String _category;
-  const ItemsListPage(this._category, {super.key});
+  final int _id;
+  const ItemsListPage(this._id, {super.key});
 
   @override
   State<StatefulWidget> createState() => _ItemsListPageState();
@@ -19,7 +19,7 @@ class ItemsListPage extends StatefulWidget {
 class _ItemsListPageState extends State<ItemsListPage> {
   var logger = Logger();
   bool online = true;
-  late List<Item> items = [];
+  late Item item;
   bool isLoading = false;
   Map _source = {ConnectivityResult.none: false};
   final NetworkConnectivity _connectivity = NetworkConnectivity.instance;
@@ -54,11 +54,11 @@ class _ItemsListPageState extends State<ItemsListPage> {
       if (online != newStatus) {
         online = newStatus;
       }
-      getItemsByCategory();
+      getCarById();
     });
   }
 
-  getItemsByCategory() async {
+  getCarById() async {
     if (!mounted) return;
     setState(() {
       isLoading = true;
@@ -66,75 +66,74 @@ class _ItemsListPageState extends State<ItemsListPage> {
     logger.log(Level.info, "Online - $online");
     try {
       if (online) {
-        items = await ApiService.instance.getItemsByCategory(widget._category);
-        await DatabaseHelper.updateCategoryItems(widget._category, items);
+        item = await ApiService.instance.getCarById(widget._id);
       } else {
-        items = await DatabaseHelper.getItemsByCategory(widget._category);
+        item = await DatabaseHelper.getCarById(widget._id);
       }
     } catch (e) {
       logger.e(e);
       message(context, "Error when retreiving data from server", "Error");
-      items = await DatabaseHelper.getItemsByCategory(widget._category);
+      item = await DatabaseHelper.getCarById(widget._id);
     }
     setState(() {
       isLoading = false;
     });
   }
 
-  void deleteData(Item item) async {
-    if (!mounted) return;
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      if (online) {
-        setState(() {
-          ApiService.instance.deleteItem(item.id!);
-          DatabaseHelper.deleteItem(item.id!);
-          items.remove(item);
-          Navigator.pop(context);
-        });
-      } else {
-        message(context, "Operation not available", "Info");
-      }
-    } catch (e) {
-      logger.e(e);
-      message(context, "Error when deleting data from server", "Error");
-    }
-    setState(() {
-      isLoading = false;
-    });
-  }
+  // void deleteData(Item item) async {
+  //   if (!mounted) return;
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   try {
+  //     if (online) {
+  //       setState(() {
+  //         ApiService.instance.deleteItem(item.id!);
+  //         DatabaseHelper.deleteItem(item.id!);
+  //         items.remove(item);
+  //         Navigator.pop(context);
+  //       });
+  //     } else {
+  //       message(context, "Operation not available", "Info");
+  //     }
+  //   } catch (e) {
+  //     logger.e(e);
+  //     message(context, "Error when deleting data from server", "Error");
+  //   }
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  // }
 
-  removeItem(BuildContext context, int id) {
-    showDialog(
-        context: context,
-        builder: ((context) => AlertDialog(
-              title: const Text("Delete Item"),
-              content: const Text("Are you sure you want to delete this item?"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("Cancel"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    deleteData(items.firstWhere((element) => element.id == id));
-                  },
-                  child:
-                      const Text("Delete", style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            )));
-  }
+  // removeItem(BuildContext context, int id) {
+  //   showDialog(
+  //       context: context,
+  //       builder: ((context) => AlertDialog(
+  //             title: const Text("Delete Item"),
+  //             content: const Text("Are you sure you want to delete this item?"),
+  //             actions: [
+  //               TextButton(
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //                 child: const Text("Cancel"),
+  //               ),
+  //               TextButton(
+  //                 onPressed: () {
+  //                   deleteData(items.firstWhere((element) => element.id == id));
+  //                 },
+  //                 child:
+  //                     const Text("Delete", style: TextStyle(color: Colors.red)),
+  //               ),
+  //             ],
+  //           )));
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget._category),
+        title: Text('${widget._id} car details'),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -144,13 +143,13 @@ class _ItemsListPageState extends State<ItemsListPage> {
                 ListView.builder(
                   itemBuilder: ((context, index) {
                     return ListTile(
-                      title: Text(items[index].name),
+                      title: Text(item.name!),
                       subtitle: Text(
-                          '${items[index].description}, ${items[index].image}, ${items[index].category}, units: ${items[index].units}, price: ${items[index].price}'),
+                          '${item.supplier}, ${item.details}, ${item.status}, ${item.quantity}, ${item.type}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          removeItem(context, items[index].id!);
+                          //removeItem(context, items[index].id!);
                         },
                         color: Colors.red,
                       ),
@@ -163,7 +162,7 @@ class _ItemsListPageState extends State<ItemsListPage> {
                       ),
                     );
                   }),
-                  itemCount: items.length,
+                  itemCount: 1,
                   physics: ScrollPhysics(),
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,

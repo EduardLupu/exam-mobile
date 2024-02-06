@@ -13,11 +13,8 @@ class EditItemPage extends StatefulWidget {
 }
 
 class _EditItemState extends State<EditItemPage> {
-  late TextEditingController priceController;
-
   @override
   void initState() {
-    priceController = TextEditingController(text: widget.item.price.toString());
     super.initState();
   }
 
@@ -25,41 +22,18 @@ class _EditItemState extends State<EditItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Price'),
+        title: const Text('Car details'),
       ),
       body: ListView(
         children: [
+          Text('ID: ${widget.item.id}'),
           Text('Name: ${widget.item.name}'),
-          Text('Description: ${widget.item.description}'),
-          Text('Image: ${widget.item.image}'),
-          Text('Category: ${widget.item.category}'),
-          Text('Units: ${widget.item.units.toString()}'),
-          TextField(
-            controller: priceController,
-            decoration: const InputDecoration(
-              labelText: 'Price',
-            ),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                double? price = double.tryParse(priceController.text);
-                if (price != null) {
-                  Navigator.pop(
-                      context,
-                      Item(
-                        id: widget.item.id,
-                        name: widget.item.name,
-                        description: widget.item.description,
-                        image: widget.item.image,
-                        category: widget.item.category,
-                        units: widget.item.units,
-                        price: price.toDouble(),
-                      ));
-                } else {
-                  message(context, "Price must be a double", "Error");
-                }
-              },
-              child: const Text('Save')),
+          Text('Supplier: ${widget.item.supplier}'),
+          Text('Details: ${widget.item.details}'),
+          Text('Status: ${widget.item.status}'),
+          Text('Quantity: ${widget.item.quantity.toString()}'),
+          Text('Type: ${widget.item.type}'),
+          ElevatedButton(onPressed: () {}, child: const Text('Save')),
         ],
       ),
     );

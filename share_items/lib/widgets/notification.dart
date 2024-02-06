@@ -10,7 +10,7 @@ import 'message.dart';
 
 class ItemNotification extends StatelessWidget {
   final channel =
-      WebSocketChannel.connect(Uri.parse('ws://192.168.253.1:2325'));
+      WebSocketChannel.connect(Uri.parse('ws://192.168.197.1:2406'));
 
   ItemNotification({super.key});
 
@@ -22,7 +22,6 @@ class ItemNotification extends StatelessWidget {
             if (snapshot.hasData) {
               var item = Item.fromJson(jsonDecode(snapshot.data.toString()));
               Logger().log(Level.info, item);
-              item.price.toDouble();
               message(context, item.toString(), "Item added");
             }
           });

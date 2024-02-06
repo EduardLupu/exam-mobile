@@ -1,78 +1,78 @@
 class Item {
   int? id;
-  String name;
-  String description;
-  String image;
-  String category;
-  int units;
-  double price;
+  String? name;
+  String? supplier;
+  String? details;
+  String? status;
+  int? quantity;
+  String? type;
 
   Item({
     this.id,
     required this.name,
-    required this.description,
-    required this.image,
-    required this.category,
-    required this.units,
-    required this.price,
+    required this.supplier,
+    required this.details,
+    required this.status,
+    required this.quantity,
+    required this.type,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
         id: json['id'] as int?,
         name: json['name'] as String,
-        description: json['description'] as String,
-        image: json['image'] as String,
-        category: json['category'] as String,
-        units: json['units'] as int,
-        price: json['price'].toDouble());
+        supplier: json['supplier'] as String,
+        details: json['details'] as String,
+        status: json['status'] as String,
+        quantity: json['quantity'] as int,
+        type: json['type'] as String);
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'description': description,
-      'image': image,
-      'category': category,
-      'units': units,
-      'price': price
+      'supplier': supplier,
+      'details': details,
+      'status': status,
+      'quantity': quantity,
+      'type': type
     };
   }
 
   Map<String, dynamic> toJsonWithoutId() {
     return {
       'name': name,
-      'description': description,
-      'image': image,
-      'category': category,
-      'units': units,
-      'price': price
+      'supplier': supplier,
+      'details': details,
+      'status': status,
+      'quantity': quantity,
+      'type': type
     };
   }
 
   Item copy({
     int? id,
     String? name,
-    String? description,
-    String? image,
-    String? category,
-    int? units,
-    double? price,
+    String? supplier,
+    String? details,
+    String? status,
+    int? quantity,
+    String? type,
   }) {
     return Item(
       id: id ?? this.id,
       name: name ?? this.name,
-      description: description ?? this.description,
-      image: image ?? this.image,
-      category: category ?? this.category,
-      units: units ?? this.units,
-      price: price ?? this.price,
+      supplier: supplier ?? this.supplier,
+      details: details ?? this.details,
+      status: status ?? this.status,
+      quantity: quantity ?? this.quantity,
+      type: type ?? this.type,
     );
   }
 
   @override
   String toString() {
-    return 'Item with name: $name, description: $description, image: $image, category: $category, units: $units, price: $price';
+    return 'Item with name: $name, supplier: $supplier, details: $details, status: $status, quantity: $quantity, type: $type';
   }
 }
